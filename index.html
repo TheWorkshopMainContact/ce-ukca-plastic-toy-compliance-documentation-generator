@@ -1,27 +1,28 @@
-<!DOCTYPE html> <!--Tells browser code is written in HTML 5 -->
-<html lang="en-GB"> <!--Sets language to British English -->
+<!DOCTYPE html>
+<html lang="en-GB">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1"> <!--So page fits phone & tablet screens -->
-    <meta name="description" content="Fill in a short form and download a completed UKCA Declaration of Conformity for a plastic toy as a PDF."> <!--Short summary for search engines-->
-    <title>UKCA Declaration of Conformity Generator</title> <!--Text shown in browser tab-->
-    <link rel="stylesheet" href="css/style.css"> <!--Loads CSS file to style the page-->
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Fits phone and tablet screens -->
+    <meta name="description" content="Fill in a short form and download a completed UKCA Declaration of Conformity for a plastic toy as a PDF."> <!-- Summary for search engines -->
+    <title>UKCA Declaration of Conformity Generator</title> <!-- Browser tab text -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
     <header class="site-header">
-        <h1>UKCA Declaration of Conformity Generator</h1> <!-- Main page heading -->
-        <p>Complete each section in order, then download your toy's UKCA Declaration of Conformity as a PDF.</p> <!-- User instructions-->
+        <h1>UKCA Declaration of Conformity Generator</h1>
+        <p>Complete each section in order, then download your toy's UKCA Declaration of Conformity as a PDF.</p>
     </header>
 
     <main>
-        <form id="doc-form" novalidate> <!-- The JavaScript does the checking instead of the browser -->
+        <form id="doc-form" novalidate> <!-- JavaScript checks the form, not the browser -->
 
             <!-- Section 1: product details -->
-            <fieldset> <!--Groups all related fields in section 1-->
-                <legend>1. Product</legend> <!--Group Title-->
-                <div class="field"> <!--For one label and input -->
-                    <label for="product-name">Toy name</label> 
+            <!-- Each fieldset is one section; each field holds a label, an input and a space for its error message -->
+            <fieldset>
+                <legend>1. Product</legend>
+                <div class="field">
+                    <label for="product-name">Toy name</label>
                     <input type="text" id="product-name" maxlength="80" autocomplete="off" required aria-describedby="product-name-error">
                     <span class="error" id="product-name-error"></span>
                 </div>
@@ -45,7 +46,7 @@
                     <label for="toy-photo">Colour photo (JPG, PNG or WebP, up to 5 MB)</label>
                     <input type="file" id="toy-photo" accept="image/jpeg,image/png,image/webp" required aria-describedby="toy-photo-error">
                     <span class="error" id="toy-photo-error"></span>
-                    <img id="photo-preview" class="photo-preview" alt="Preview of the selected toy photo" hidden>
+                    <img id="photo-preview" class="photo-preview" alt="Preview of the selected toy photo" hidden> <!-- Shown once a photo is chosen -->
                 </div>
             </fieldset>
 
@@ -118,7 +119,7 @@
                 <button type="submit" id="generate-btn">Download PDF</button>
                 <button type="reset" id="reset-btn" class="secondary">Clear form</button>
             </div>
-            <p id="form-status" class="status" role="status" aria-live="polite"></p>
+            <p id="form-status" class="status" role="status" aria-live="polite"></p> <!-- Screen readers announce changes here -->
         </form>
     </main>
 
@@ -128,6 +129,6 @@
 
     <!-- jsPDF 2.5.1 by parallax (MIT licence): https://github.com/parallax/jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/script.js"></script> <!-- Last, so the page exists before the script runs -->
 </body>
 </html>

@@ -1,49 +1,50 @@
 
-:root { /* Whole page selected & variables here can be used anywhere on a page */
-    --colour-bg: #f3f5f8; /* Page background Colour is Light Grey*/
-    --colour-surface: #ffffff; /* Section boxes Colour is White*/
-    --colour-ink: #14213d; /* Main text is Dark Navy */
-    --colour-muted: #4a5568; /* Help Text in Soft Grey */
-    --colour-border: #c3cad6; /*Border Colour in Grey */
-    --colour-accent: #0b5cad; /* Buttons and Highlights in Blue */
-    --colour-accent-dark: #084a8c; /* When hovering over a button the colour is Blue */
-    --colour-error: #b3261e; /* Error messages in Red */
-    --colour-success: #1b6e3c; /* Success messages in Green */
-    --font-body: sans-serif; /* Sans-serif used for all text on pages */
+/* Colours and font are set once here and reused throughout the file */
+:root {
+    --colour-bg: #f3f5f8; /* Light grey page background */
+    --colour-surface: #ffffff; /* White section boxes */
+    --colour-ink: #14213d; /* Dark navy text and banner */
+    --colour-muted: #4a5568; /* Soft grey help text */
+    --colour-border: #c3cad6; /* Grey borders */
+    --colour-accent: #0b5cad; /* Blue buttons and highlights */
+    --colour-accent-dark: #084a8c; /* Darker blue for button hover */
+    --colour-error: #b3261e; /* Red errors */
+    --colour-success: #1b6e3c; /* Green success messages */
+    --font-body: sans-serif; /* One font for the whole page */
 }
 
-* { /* Selects every element on the page */
-    box-sizing: border-box; /* Includes padding and borders in an element's width */
+* {
+    box-sizing: border-box; /* Padding and borders count towards an element's width */
 }
 
-body { /* Selects the whole page */
+body {
     margin: 0;
-    background: var(--colour-bg); /*Background is made Light Grey */
-    color: var(--colour-ink); /* Text colour is dark */
-    font-family: var(--font-body); /* Font is applied */
-    line-height: 1.5; /* Spacing between lines of text */
+    background: var(--colour-bg);
+    color: var(--colour-ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
 }
 
 /* ---------- Header and footer ---------- */
 .site-header {
-    background: var(--colour-ink); /*Makes a dark navy coloured banner background at the top of the page */
-    color: #ffffff; /* Text on the banner is white */
-    padding: 2rem 1rem; /* Space inside the top and bottom of the banner */
-    text-align: center; /* Centres the banner text */
+    background: var(--colour-ink);
+    color: #ffffff;
+    padding: 2rem 1rem;
+    text-align: center;
 }
 
-.site-header h1 {  /* Selects heading in the banner */
-    margin: 0 0 0.5rem; /* Reduces spacing to 0, with a small amount of space below */
-    font-size: 1.75rem; /* Sets the size of the heading on small screens */
+.site-header h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.75rem; /* Small screens; larger size is set in the media query */
 }
 
-.site-header p { /*Test inside the banner underneath the title selected */
-    margin: 0 auto; /* Text centered */
-    max-width: 38rem; /* Stops lines from going across the full width of the page and getting too long */
+.site-header p {
+    margin: 0 auto; /* Centres the block */
+    max-width: 38rem; /* Keeps lines a readable length */
 }
 
 .site-footer {
-    color: var(--colour-muted); 
+    color: var(--colour-muted);
     font-size: 0.875rem;
     margin: 0 auto;
     max-width: 40rem;
@@ -61,7 +62,7 @@ main {
 fieldset {
     background: var(--colour-surface);
     border: 1px solid var(--colour-border);
-    border-left: 6px solid var(--colour-accent);
+    border-left: 6px solid var(--colour-accent); /* Blue stripe marks each section */
     border-radius: 6px;
     margin: 0 0 1.25rem;
     padding: 1rem 1.25rem 0.5rem;
@@ -78,7 +79,7 @@ legend {
 }
 
 label {
-    display: block;
+    display: block; /* Label sits above its input */
     font-weight: 600;
     margin-bottom: 0.25rem;
 }
@@ -95,12 +96,14 @@ input[type="file"] {
     width: 100%;
 }
 
+/* Visible outline for keyboard users */
 input:focus-visible,
 button:focus-visible {
     outline: 3px solid var(--colour-accent);
     outline-offset: 2px;
 }
 
+/* Added by JavaScript when a field fails validation */
 input.invalid {
     border-color: var(--colour-error);
     border-width: 2px;
@@ -118,7 +121,7 @@ input.invalid {
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
-    min-height: 1.1rem;
+    min-height: 1.1rem; /* Reserves space so the page does not jump */
 }
 
 .photo-preview {
@@ -133,7 +136,7 @@ input.invalid {
 /* ---------- Buttons and status ---------- */
 .actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Buttons stack on narrow screens */
     gap: 0.75rem;
 }
 
@@ -153,6 +156,7 @@ button:hover {
     border-color: var(--colour-accent-dark);
 }
 
+/* Less prominent button for Clear form */
 button.secondary {
     background: transparent;
     color: var(--colour-accent);

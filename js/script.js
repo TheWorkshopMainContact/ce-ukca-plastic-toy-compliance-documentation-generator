@@ -8,11 +8,15 @@
     "use strict";
 
     /* ---------- Constants ---------- */
-    var MAX_PHOTO_BYTES = 5 * 1024 * 1024;
-    var MAX_PHOTO_PIXELS = 1200;
+    var MAX_PHOTO_BYTES = 5 * 1024 * 1024; // 5 MB
+    var MAX_IMAGE_PIXELS = 1200; // Longest side after shrinking
     var ALLOWED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-    // Text fields that must be filled in, with the name shown in error messages
+    var SIGNATURE_PATH = "assets/images/gwensignature.png";
+    var SIGNATURE_MAX_WIDTH = 45; // Millimetres on the PDF
+    var SIGNATURE_MAX_HEIGHT = 11;
+
+    // Required text fields and the names used in error messages
     var REQUIRED_FIELDS = [
         {id: "product-name", label: "Toy name"},
         {id: "model-no", label: "Model number"},
@@ -29,7 +33,7 @@
         {id: "document-reference", label: "Document reference"}
     ];
 
-    // Standards printed on every declaration (taken from the UKCA template)
+    // Standards printed on every declaration, as in the UKCA template
     var STANDARDS = [
         {ref: "BS EN71-1", title: "Safety of Toys \u2013 Part 1: Mechanical and physical properties", edition: "2014+A1:2018"},
         {ref: "BS EN71-2", title: "Safety of Toys \u2013 Part 2: Flammability", edition: "2020+A1:2025"},
@@ -43,11 +47,13 @@
     var generateBtn = document.getElementById("generate-btn");
 
     /* ---------- Helpers ---------- */
+
+    // Returns the trimmed text in a field
     function getValue(id) {
         return document.getElementById(id).value.trim();
     }
 
-    // Show or clear the error message under a field
+    // Shows an error under a field, or clears it when the message is empty
     function setError(id, message) {
         var input = document.getElementById(id);
         document.getElementById(id + "-error").textContent = message;
@@ -55,22 +61,25 @@
         input.setAttribute("aria-invalid", message !== "" ? "true" : "false");
     }
 
+    // Shows a message under the buttons; type is "success", "failure" or empty
     function setStatus(message, type) {
         statusBox.textContent = message;
         statusBox.className = "status" + (type ? " " + type : "");
     }
 
-    // Turn 2025-12-31 into 31/12/2025
+    // Turns 2026-12-31 into 31/12/2026
     function formatDate(isoDate) {
         var parts = isoDate.split("-");
         return parts[2] + "/" + parts[1] + "/" + parts[0];
     }
 
+    // Builds a safe file name from the document reference
     function makeFileName(reference) {
         var safe = reference.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
         return "ukca-declaration-of-conformity-" + (safe || "document") + ".pdf";
     }
 
+    // Fills the date box with today's date
     function setDefaultDate() {
         var now = new Date();
         var month = String(now.getMonth() + 1).padStart(2, "0");
@@ -79,9 +88,12 @@
     }
 
     /* ---------- Validation ---------- */
-    // Check every field; returns the id of the first invalid field, or "" if all are valid
+
+    // Checks every field; returns the first invalid id, or "" if all are valid
     function validateForm() {
         var firstInvalid = "";
+        var photoMessage = "";
+        var file = photoInput.files[0];
 
         REQUIRED_FIELDS.forEach(function (field) {
             var message = "";
@@ -94,8 +106,6 @@
             }
         });
 
-        var photoMessage = "";
-        var file = photoInput.files[0];
         if (!file) {
             photoMessage = "Choose a photo of the toy.";
         } else if (ALLOWED_PHOTO_TYPES.indexOf(file.type) === -1) {
@@ -111,8 +121,29 @@
         return firstInvalid;
     }
 
-    /* ---------- Photo handling ---------- */
-    // Read the chosen file, shrink it and return a JPEG data URL with its size
+    /* ---------- Image handling ---------- */
+
+    // Shrinks an image on a canvas and returns its data URL and size
+    function imageToData(img, background, mime) {
+        var scale = Math.min(1, MAX_IMAGE_PIXELS / Math.max(img.width, img.height));
+        var canvas = document.createElement("canvas");
+        var ctx = canvas.getContext("2d");
+
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        if (background) {
+            ctx.fillStyle = background; // Stops transparent areas turning black in a JPEG
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        return {
+            dataUrl: canvas.toDataURL(mime, 0.85),
+            width: canvas.width,
+            height: canvas.height
+        };
+    }
+
+    // Reads the chosen photo and returns it as a shrunken JPEG
     function loadPhoto(file) {
         return new Promise(function (resolve, reject) {
             var reader = new FileReader();
@@ -125,20 +156,7 @@
                     reject(new Error("The photo could not be opened. Try a different image."));
                 };
                 img.onload = function () {
-                    var scale = Math.min(1, MAX_PHOTO_PIXELS / Math.max(img.width, img.height));
-                    var canvas = document.createElement("canvas");
-                    canvas.width = Math.round(img.width * scale);
-                    canvas.height = Math.round(img.height * scale);
-                    var ctx = canvas.getContext("2d");
-                    // White backing so transparent PNGs do not turn black
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    resolve({
-                        dataUrl: canvas.toDataURL("image/jpeg", 0.85),
-                        width: canvas.width,
-                        height: canvas.height
-                    });
+                    resolve(imageToData(img, "#ffffff", "image/jpeg"));
                 };
                 img.src = reader.result;
             };
@@ -146,7 +164,25 @@
         });
     }
 
-    // Show a preview when a valid photo is chosen
+    // Loads the signature image; resolves to null if it is missing or blocked
+    function loadSignature() {
+        return new Promise(function (resolve) {
+            var img = new Image();
+            img.onerror = function () {
+                resolve(null);
+            };
+            img.onload = function () {
+                try {
+                    resolve(imageToData(img, "", "image/png")); // PNG keeps transparency
+                } catch (ignore) {
+                    resolve(null); // Some browsers block canvas use for local files
+                }
+            };
+            img.src = SIGNATURE_PATH;
+        });
+    }
+
+    // Shows a preview when a valid photo is chosen
     function updatePhotoPreview() {
         var file = photoInput.files[0];
         if (file && ALLOWED_PHOTO_TYPES.indexOf(file.type) !== -1 && file.size <= MAX_PHOTO_BYTES) {
@@ -160,22 +196,25 @@
     }
 
     /* ---------- PDF drawing ---------- */
-    // Draw wrapped text and return the y position after the last line
-    function drawWrapped(doc, text, x, y, width, lineHeight, align) {
+    // Positions are in millimetres on an A4 page
+
+    // Draws wrapped text; returns the y position below the last line
+    function drawWrapped(doc, text, x, y, width, lineHeight) {
         var lines = doc.splitTextToSize(text, width);
-        doc.text(lines, x, y, {align: align || "left"});
+        doc.text(lines, x, y);
         return y + lines.length * lineHeight;
     }
 
-    // Draw a centred line made of italic and bold parts
+    // Draws one centred line made of italic and bold parts
     function drawCentredMixed(doc, parts, y, centreX) {
         var total = 0;
+        var x;
         parts.forEach(function (part) {
             doc.setFont("times", part.style);
             part.width = doc.getTextWidth(part.text);
             total += part.width;
         });
-        var x = centreX - total / 2;
+        x = centreX - total / 2;
         parts.forEach(function (part) {
             doc.setFont("times", part.style);
             doc.text(part.text, x, y);
@@ -183,6 +222,7 @@
         });
     }
 
+    // Title, manufacturer details and directive; returns the y below them
     function drawHeader(doc, data) {
         var centreX = 105;
         var y;
@@ -216,6 +256,7 @@
         return y + 8;
     }
 
+    // Product name, model number and photo; returns the y below them
     function drawProduct(doc, data, photo, startY) {
         var y = startY + 9;
         var maxW = 100;
@@ -224,6 +265,7 @@
         var w = photo.width * ratio;
         var h = photo.height * ratio;
         var lastY;
+        var photoTop;
 
         doc.setFont("times", "italic");
         doc.setFontSize(10);
@@ -234,14 +276,15 @@
         doc.text("Model No:", 85, y + 6);
         doc.setFont("helvetica", "bold");
         lastY = drawWrapped(doc, data.productName, 112, y, 78, 4.5);
-        lastY = drawWrapped(doc, data.modelNo, 112, Math.max(lastY, y + 6 - 0.5) + 1.5, 78, 4.5);
+        lastY = drawWrapped(doc, data.modelNo, 112, Math.max(lastY, y + 5.5) + 1.5, 78, 4.5);
 
-        // Photo is centred inside a 62 mm tall area under the product details
-        var photoTop = lastY + 3;
+        // Photo is centred in a fixed-height area below the details
+        photoTop = lastY + 3;
         doc.addImage(photo.dataUrl, "JPEG", 105 - w / 2, photoTop + (maxH - h) / 2, w, h);
         return photoTop + maxH + 4;
     }
 
+    // Standards table, age suitability and declaration; returns the y below them
     function drawStandards(doc, data, startY) {
         var y = startY;
 
@@ -273,13 +316,26 @@
         return drawWrapped(doc, "I hereby declare that the toy named has been designed to comply with the relevant sections of the above harmonised standards specified and the applicable Essential Requirements of the Toy Safety Directive.", 20, y, 170, 4.5);
     }
 
-    function drawSignature(doc, data, startY) {
+    // Signature, signer details, UKCA mark and footer
+    function drawSignature(doc, data, signature, startY) {
         var y = Math.max(startY + 8, 238);
+        var ratio;
 
         doc.setFont("helvetica", "normal");
         doc.setFontSize(10);
         doc.text("Signed:", 20, y);
-        doc.line(36, y + 0.5, 110, y + 0.5);
+
+        if (signature) {
+            ratio = Math.min(SIGNATURE_MAX_WIDTH / signature.width, SIGNATURE_MAX_HEIGHT / signature.height);
+            doc.addImage(signature.dataUrl, "PNG", 36, y + 1.5 - signature.height * ratio, signature.width * ratio, signature.height * ratio);
+        } else {
+            // Fallback: first initial and surname in a script-style italic
+            doc.setFont("times", "bolditalic");
+            doc.setFontSize(18);
+            doc.text(data.firstName.charAt(0) + data.lastName, 36, y);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+        }
 
         y += 12;
         doc.text("Name:", 20, y);
@@ -304,21 +360,27 @@
         doc.text(data.businessName, 20, 288, {maxWidth: 140});
     }
 
-    function buildPdf(data, photo) {
+    // Builds the whole PDF and downloads it
+    function buildPdf(data, photo, signature) {
         var doc = new window.jspdf.jsPDF({unit: "mm", format: "a4"});
         var y = drawHeader(doc, data);
         y = drawProduct(doc, data, photo, y);
         y = drawStandards(doc, data, y);
-        drawSignature(doc, data, y);
+        drawSignature(doc, data, signature, y);
         doc.save(makeFileName(data.documentReference));
     }
 
     /* ---------- Event handlers ---------- */
+
+    // Runs when Download PDF is clicked
     function handleSubmit(event) {
+        var firstInvalid;
+        var data = {};
+
         event.preventDefault();
         setStatus("", "");
 
-        var firstInvalid = validateForm();
+        firstInvalid = validateForm();
         if (firstInvalid !== "") {
             setStatus("Fix the highlighted fields and try again.", "failure");
             document.getElementById(firstInvalid).focus();
@@ -330,20 +392,19 @@
             return;
         }
 
-        generateBtn.disabled = true;
+        generateBtn.disabled = true; // Prevents a second click while working
         setStatus("Creating your PDF\u2026", "");
 
-        var data = {};
         REQUIRED_FIELDS.forEach(function (field) {
-            // Convert "product-name" to "productName" for use in the PDF code
+            // Turns "product-name" into "productName"
             var key = field.id.replace(/-([a-z])/g, function (match, letter) {
                 return letter.toUpperCase();
             });
             data[key] = getValue(field.id);
         });
 
-        loadPhoto(photoInput.files[0]).then(function (photo) {
-            buildPdf(data, photo);
+        Promise.all([loadPhoto(photoInput.files[0]), loadSignature()]).then(function (results) {
+            buildPdf(data, results[0], results[1]);
             setStatus("Your PDF has been downloaded.", "success");
         }).catch(function (error) {
             setStatus(error.message || "Something went wrong while creating the PDF.", "failure");
@@ -352,8 +413,9 @@
         });
     }
 
+    // Runs when Clear form is clicked
     function handleReset() {
-        // Wait for the browser to clear the fields, then tidy up the page
+        // Waits for the browser to clear the fields first
         window.setTimeout(function () {
             REQUIRED_FIELDS.forEach(function (field) {
                 setError(field.id, "");
