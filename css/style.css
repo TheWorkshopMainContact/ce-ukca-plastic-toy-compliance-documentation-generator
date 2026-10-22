@@ -1,0 +1,192 @@
+
+:root { /* Whole page selected & variables here can be used anywhere on a page */
+    --colour-bg: #f3f5f8; /* Page background Colour is Light Grey*/
+    --colour-surface: #ffffff; /* Section boxes Colour is White*/
+    --colour-ink: #14213d; /* Main text is Dark Navy */
+    --colour-muted: #4a5568; /* Help Text in Soft Grey */
+    --colour-border: #c3cad6; /*Border Colour in Grey */
+    --colour-accent: #0b5cad; /* Buttons and Highlights in Blue */
+    --colour-accent-dark: #084a8c; /* When hovering over a button the colour is Blue */
+    --colour-error: #b3261e; /* Error messages in Red */
+    --colour-success: #1b6e3c; /* Success messages in Green */
+    --font-body: sans-serif; /* Sans-serif used for all text on pages */
+}
+
+* { /* Selects every element on the page */
+    box-sizing: border-box; /* Includes padding and borders in an element's width */
+}
+
+body { /* Selects the whole page */
+    margin: 0;
+    background: var(--colour-bg); /*Background is made Light Grey */
+    color: var(--colour-ink); /* Text colour is dark */
+    font-family: var(--font-body); /* Font is applied */
+    line-height: 1.5; /* Spacing between lines of text */
+}
+
+/* ---------- Header and footer ---------- */
+.site-header {
+    background: var(--colour-ink); /*Makes a dark navy coloured banner background at the top of the page */
+    color: #ffffff; /* Text on the banner is white */
+    padding: 2rem 1rem; /* Space inside the top and bottom of the banner */
+    text-align: center; /* Centres the banner text */
+}
+
+.site-header h1 {  /* Selects heading in the banner */
+    margin: 0 0 0.5rem; /* Reduces spacing to 0, with a small amount of space below */
+    font-size: 1.75rem; /* Sets the size of the heading on small screens */
+}
+
+.site-header p { /*Test inside the banner underneath the title selected */
+    margin: 0 auto; /* Text centered */
+    max-width: 38rem; /* Stops lines from going across the full width of the page and getting too long */
+}
+
+.site-footer {
+    color: var(--colour-muted); 
+    font-size: 0.875rem;
+    margin: 0 auto;
+    max-width: 40rem;
+    padding: 1.5rem 1rem 2.5rem;
+    text-align: center;
+}
+
+/* ---------- Form layout ---------- */
+main {
+    margin: 0 auto;
+    max-width: 40rem;
+    padding: 1.5rem 1rem 0;
+}
+
+fieldset {
+    background: var(--colour-surface);
+    border: 1px solid var(--colour-border);
+    border-left: 6px solid var(--colour-accent);
+    border-radius: 6px;
+    margin: 0 0 1.25rem;
+    padding: 1rem 1.25rem 0.5rem;
+}
+
+legend {
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 0 0.5rem;
+}
+
+.field {
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="file"] {
+    background: #ffffff;
+    border: 1px solid var(--colour-border);
+    border-radius: 4px;
+    color: var(--colour-ink);
+    font: inherit;
+    padding: 0.6rem 0.75rem;
+    width: 100%;
+}
+
+input:focus-visible,
+button:focus-visible {
+    outline: 3px solid var(--colour-accent);
+    outline-offset: 2px;
+}
+
+input.invalid {
+    border-color: var(--colour-error);
+    border-width: 2px;
+}
+
+.hint {
+    color: var(--colour-muted);
+    display: block;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.error {
+    color: var(--colour-error);
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    min-height: 1.1rem;
+}
+
+.photo-preview {
+    border: 1px solid var(--colour-border);
+    border-radius: 4px;
+    display: block;
+    margin-top: 0.5rem;
+    max-height: 220px;
+    max-width: 100%;
+}
+
+/* ---------- Buttons and status ---------- */
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+button {
+    background: var(--colour-accent);
+    border: 2px solid var(--colour-accent);
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+}
+
+button:hover {
+    background: var(--colour-accent-dark);
+    border-color: var(--colour-accent-dark);
+}
+
+button.secondary {
+    background: transparent;
+    color: var(--colour-accent);
+}
+
+button.secondary:hover {
+    background: #e4edf7;
+}
+
+button:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.status {
+    font-weight: 600;
+    min-height: 1.5rem;
+}
+
+.status.success {
+    color: var(--colour-success);
+}
+
+.status.failure {
+    color: var(--colour-error);
+}
+
+/* ---------- Larger screens ---------- */
+@media (min-width: 640px) {
+    .site-header h1 {
+        font-size: 2.25rem;
+    }
+
+    fieldset {
+        padding: 1.25rem 1.5rem 0.75rem;
+    }
+}

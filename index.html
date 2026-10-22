@@ -1,0 +1,133 @@
+<!DOCTYPE html> <!--Tells browser code is written in HTML 5 -->
+<html lang="en-GB"> <!--Sets language to British English -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!--So page fits phone & tablet screens -->
+    <meta name="description" content="Fill in a short form and download a completed UKCA Declaration of Conformity for a plastic toy as a PDF."> <!--Short summary for search engines-->
+    <title>UKCA Declaration of Conformity Generator</title> <!--Text shown in browser tab-->
+    <link rel="stylesheet" href="css/style.css"> <!--Loads CSS file to style the page-->
+</head>
+
+<body>
+    <header class="site-header">
+        <h1>UKCA Declaration of Conformity Generator</h1> <!-- Main page heading -->
+        <p>Complete each section in order, then download your toy's UKCA Declaration of Conformity as a PDF.</p> <!-- User instructions-->
+    </header>
+
+    <main>
+        <form id="doc-form" novalidate> <!-- The JavaScript does the checking instead of the browser -->
+
+            <!-- Section 1: product details -->
+            <fieldset> <!--Groups all related fields in section 1-->
+                <legend>1. Product</legend> <!--Group Title-->
+                <div class="field"> <!--For one label and input -->
+                    <label for="product-name">Toy name</label> 
+                    <input type="text" id="product-name" maxlength="80" autocomplete="off" required aria-describedby="product-name-error">
+                    <span class="error" id="product-name-error"></span>
+                </div>
+                <div class="field">
+                    <label for="model-no">Model number</label>
+                    <input type="text" id="model-no" maxlength="40" autocomplete="off" required aria-describedby="model-no-error">
+                    <span class="error" id="model-no-error"></span>
+                </div>
+                <div class="field">
+                    <label for="age-suitability">Age suitability</label>
+                    <input type="text" id="age-suitability" maxlength="100" value="Suitable for all ages" required aria-describedby="age-suitability-error">
+                    <span class="hint">For example: Suitable for all ages, or Not suitable for children under 36 months.</span>
+                    <span class="error" id="age-suitability-error"></span>
+                </div>
+            </fieldset>
+
+            <!-- Section 2: product photo -->
+            <fieldset>
+                <legend>2. Photo of the toy</legend>
+                <div class="field">
+                    <label for="toy-photo">Colour photo (JPG, PNG or WebP, up to 5 MB)</label>
+                    <input type="file" id="toy-photo" accept="image/jpeg,image/png,image/webp" required aria-describedby="toy-photo-error">
+                    <span class="error" id="toy-photo-error"></span>
+                    <img id="photo-preview" class="photo-preview" alt="Preview of the selected toy photo" hidden>
+                </div>
+            </fieldset>
+
+            <!-- Section 3: business details -->
+            <fieldset>
+                <legend>3. Business</legend>
+                <div class="field">
+                    <label for="business-name">Business / manufacturer name</label>
+                    <input type="text" id="business-name" maxlength="100" autocomplete="organization" required aria-describedby="business-name-error">
+                    <span class="error" id="business-name-error"></span>
+                </div>
+                <div class="field">
+                    <label for="business-address">Business address</label>
+                    <input type="text" id="business-address" maxlength="200" autocomplete="street-address" required aria-describedby="business-address-error">
+                    <span class="error" id="business-address-error"></span>
+                </div>
+            </fieldset>
+
+            <!-- Section 4: signatory details -->
+            <fieldset>
+                <legend>4. Who is signing</legend>
+                <div class="field">
+                    <label for="first-name">First name</label>
+                    <input type="text" id="first-name" maxlength="50" autocomplete="given-name" required aria-describedby="first-name-error">
+                    <span class="error" id="first-name-error"></span>
+                </div>
+                <div class="field">
+                    <label for="last-name">Last name</label>
+                    <input type="text" id="last-name" maxlength="50" autocomplete="family-name" required aria-describedby="last-name-error">
+                    <span class="error" id="last-name-error"></span>
+                </div>
+                <div class="field">
+                    <label for="position">Position in the company</label>
+                    <input type="text" id="position" maxlength="60" autocomplete="organization-title" required aria-describedby="position-error">
+                    <span class="error" id="position-error"></span>
+                </div>
+            </fieldset>
+
+            <!-- Section 5: issue details -->
+            <fieldset>
+                <legend>5. Issue details</legend>
+                <div class="field">
+                    <label for="town-city">Town / city</label>
+                    <input type="text" id="town-city" maxlength="60" autocomplete="address-level2" required aria-describedby="town-city-error">
+                    <span class="error" id="town-city-error"></span>
+                </div>
+                <div class="field">
+                    <label for="region">Region</label>
+                    <input type="text" id="region" maxlength="60" autocomplete="address-level1" required aria-describedby="region-error">
+                    <span class="error" id="region-error"></span>
+                </div>
+                <div class="field">
+                    <label for="country">Country</label>
+                    <input type="text" id="country" maxlength="60" autocomplete="country-name" required aria-describedby="country-error">
+                    <span class="error" id="country-error"></span>
+                </div>
+                <div class="field">
+                    <label for="date-of-issue">Date of issue</label>
+                    <input type="date" id="date-of-issue" required aria-describedby="date-of-issue-error">
+                    <span class="error" id="date-of-issue-error"></span>
+                </div>
+                <div class="field">
+                    <label for="document-reference">Document reference</label>
+                    <input type="text" id="document-reference" maxlength="40" autocomplete="off" required aria-describedby="document-reference-error">
+                    <span class="error" id="document-reference-error"></span>
+                </div>
+            </fieldset>
+
+            <div class="actions">
+                <button type="submit" id="generate-btn">Download PDF</button>
+                <button type="reset" id="reset-btn" class="secondary">Clear form</button>
+            </div>
+            <p id="form-status" class="status" role="status" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <footer class="site-footer">
+        <p>The standards listed on the PDF are BS EN 71-1, BS EN 71-2 and BS EN 71-3. Check the editions are current before you issue a declaration.</p>
+    </footer>
+
+    <!-- jsPDF 2.5.1 by parallax (MIT licence): https://github.com/parallax/jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
