@@ -46,7 +46,7 @@
                     <label for="toy-photo">Colour photo (JPG, PNG or WebP, up to 5 MB)</label>
                     <input type="file" id="toy-photo" accept="image/jpeg,image/png,image/webp" required aria-describedby="toy-photo-error">
                     <span class="error" id="toy-photo-error"></span>
-                    <img id="photo-preview" class="photo-preview" alt="Preview of the selected toy photo" hidden> <!-- Shown once a photo is chosen -->
+                    <img id="photo-preview" class="photo-preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Preview of the selected toy photo" hidden>
                 </div>
             </fieldset>
 
@@ -60,7 +60,7 @@
                 </div>
                 <div class="field">
                     <label for="business-address">Business address</label>
-                    <input type="text" id="business-address" maxlength="200" autocomplete="street-address" required aria-describedby="business-address-error">
+                    <input type="text" id="business-address" maxlength="200" autocomplete="off" required aria-describedby="business-address-error">
                     <span class="error" id="business-address-error"></span>
                 </div>
             </fieldset>

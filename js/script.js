@@ -1,4 +1,4 @@
-/*jslint browser, long */
+/*jshint esversion: 6*/
 /*global window */
 
 /* UKCA Declaration of Conformity generator.
